@@ -2,16 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Check server is starting</title>
+<title>Server Start</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+ <link href="./font-awesome/css/font-awesome.min.css" rel="stylesheet">
 <style>
-.wrapOption{
-  position:absolute;background:rgba(0,0,0,0.4);top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;
-  flex-flow:column wrap;z-index:9999999999;
-}
 .wrap{
   position:fixed;background:rgba(0,0,0,0.7);top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;
-  flex-flow:column wrap;z-index:99999
+  flex-flow:column wrap;z-index:1
 }
 .main{
   background:red;color:#fff;padding:12px;min-width:200px;border-radius:4px;text-align:center;margin:auto;
@@ -105,20 +102,24 @@ display:flex;
   }
 }
 #none{display:none}
-.exit{position:absolute;top:5px;right:5px;height:45px;line-height:45px;background:#fff;color:#000;z-index:999999;font-size:25px;border:0;padding:0 15px}
+
 
 .number-keyboard {
   width:330px;
   height:370px;
-  margin-left:500px;
-  border:solid red 2px;
+  margin:auto;
   text-align:center;
   padding:15px;
   border-radius:5px;
   font-size:1.5rem;
+  background:#fff;
+  z-index:100;
+  position:absolute;
+  left:0;top:0;right:0;bottom:0;
+  display:none;
 }
-#IP{
-  border:0;border-bottom:solid red 1px;
+#ipInput{
+  border:0;border-bottom:solid #666 1px;
   text-align:center; font-size:1.5rem;
   height:35px;
   margin:10px;}
@@ -140,17 +141,12 @@ display:flex;
   cursor: pointer;
   height:75px;
   line-height:40px;
-
   transition: all 0.5s;
 }
-
-
-
 .default{
   position:relative;
   
 }
-
 .default:after{
     content: "192.168.";
     position:absolute;
@@ -160,13 +156,20 @@ display:flex;
     line-height:75px;
    
 }
+.numberClose{
+    color:#FF9800;position:absolute;top:-15px;right:-10px
+}
+.setting{
+    color:#fff;position:absolute;top:2px;right:5px
+}
+#frame{position:absolute; left:0; top:0; height:100%; width:100%; border:0px}
 </style>
 
 </head>
-<body style="background:rgba(0,0,0,0.4)">
+<body >
   <div id="wrap" class="wrap">
    
-         <div style="color:yellow"><h2>Loading</h2></div>
+         <div style="color:#FFFF00"><h2>Loading</h2></div>
          <div class="loading">
               <div  class="block1 barlittle"></div>
               <div  class="block2 barlittle"></div>
@@ -174,87 +177,101 @@ display:flex;
               <div  class="block4 barlittle"></div>
               <div  class="block5 barlittle"></div>
         </div>
-    <button class="exit" onclick="window.close();">Exit</button>
+    <div class="setting">
+    <i class="fa fa-cog fa-3x" aria-hidden="true" style="margin-right:25px" onclick="setting()"></i>
+    <i class="fa fa-3x fa-times-circle exit" aria-hidden="true" onclick="window.close()">
+    </i>
+ </div>
 </div>
 
- <iframe  id="frame"  src="about:black" style="position:absolute; left:0; top:0; height:100%; width:100%; border:0px;" scrolling="no"></iframe>
-    <button  id="clearCathe" style="position:absolute;top:0px;left:0px;padding:20px;-moz-opacity:0;opacity:0">
-   </button> 
-   <img id="none"  src="http://localhost:10087/favicon.ico" onload="Check()" onerror="error()">
-
-   
-
 <div class="number-keyboard">
-  <input id="IP" type="number" readonly="" value="192.1"/>
-  <div class="layout">
-    <div class="n1">1</div>
-    <div class="n2">2</div>
-    <div class="n3">3</div>
-    <div class="n4">←</div>
-    <div class="n5">4</div>
-    <div class="n6">5</div>
-    <div class="n7">6</div>
-    <div class="n8">Clear</div>
-    <div class="n9">7</div>
-    <div class="n0">8</div>
-    <div class="dot">9</div>
-    <div class="back">Enter</div>
-    <div class="plus">0</div>
-    <div class="enter">.</div>
-    
+  <i class="fa fa-2x fa-times-circle numberClose" aria-hidden="true" onclick="setting()"></i>
+  <input id="ipInput" type="input" readonly="" value="192.168."/>
+  <div class="layout" onclick="input(event)">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div style="background:#000;color:#fff">←</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div style="background:#F44336;color:#fff">Clear</div>
+    <div>7</div>
+    <div>8</div>
+    <div>9</div>
+    <div style="background:#009688;color:#fff">Enter</div>
+    <div>0</div>
+    <div>.</div>
     <div class="default">192.168.</div>
-     <div class="enter"></div>
+     <div></div>
    
   </div>
 </div>
 
+ <iframe  id="frame"  src="about:blank" style="" scrolling="no"></iframe>
+  <img id="none"  src="about:blank" onload="Check()" onerror="error()">
 </body>
 <script>
 var myStorage = window.localStorage;
-var ipAddress=localStorage.getItem("ipAddress") || '127.0.0.1';
-
-
+var ip=localStorage.getItem("ip") || '127.0.0.1';
+var port="10087";
+var ipAddress="http://"+ip+":"+port;
+var ipInput = document.getElementById("ipInput");
+    ipInput.value=ip;
 var img = document.getElementById("none");
 var wrap = document.getElementById("wrap");
-var bnt = document.getElementById("bnt");
 var iframe=document.getElementById("frame");
-
+var e=document.querySelector(".number-keyboard");
 function load(){
-       img.src="http://localhost:10087/favicon.ico?"+new Date().getTime();
+       img.src=ipAddress+"/favicon.ico?"+new Date().getTime();
        setTimeout("load()",3000);
 }
 load();
 function error(){
+    console.log("errror")
     if(iframe.src !="about:blank"){
-      iframe.src="about:blank";  
+       
+       iframe.src="about:blank";  
        wrap.style.cssText="display:flex";
     }
 }
 function Check(){
-        if(iframe.src=="about:blank"){
-           wrap.style.cssText="display:none";
-          iframe.setAttribute("src","http://localhost:4200/home");
-         }
-        
-  
+     if(iframe.src=="about:blank"){
+         iframe.setAttribute("src",ipAddress);
+         wrap.style.cssText="display:none";
+     }
 }
-
- window.addEventListener('message',function(e){
-         var msg=e.data["msg"];
-         if(msg=="loading"){
-           wrap.style.cssText="display:none";
-         }else if(msg=="exit"){
-            window.close()
-         }else{
-             var win = remote.getCurrentWindow();
-     win.webContents.session.clearCache(function(){
-   ipc.send('flash');
-  
- });
-         }
-},false);
-//require('./renderer.js');
-
+var input=function(event){
+var value=event.target.innerText;
+switch(value) {
+    case "Clear":
+         ipInput.value="";
+        break;
+    case "Enter":
+         ipAddress="http://"+ipInput.value+":"+port;
+         localStorage.setItem("ip",ipInput.value);
+         e.style.cssText="display:none";
+         load();
+        break;
+    case "←":
+       var length= ipInput.value.length;
+        if(length>0)
+        ipInput.value=ipInput.value.substring(0,length-1);
+        break; 
+     case "192.168.": 
+       ipInput.value="";
+    default:
+        ipInput.value+=value;
+}
+}
+var setting=function(){
+  if(e.style.display !="block"){
+        e.style.cssText="display:block";
+     
+    }else{
+          e.style.cssText="display:none";
+    }
+}
+require('./renderer.js');
 </script>
-    
 </html>
