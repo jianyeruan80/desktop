@@ -1,0 +1,4 @@
+IP="192.168.1.52:22080";
+URL="http://"+IP+"/kpos/kitchen/#/tab/runner?close=true"; //kd kitchen
+//URL="http://"+IP+"/kpos/kitchen/#/tab/runner?close=true";  //kd runn
+
